@@ -1,0 +1,387 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Courier New', monospace;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: white;
+    min-height: 100vh;
+    padding: 20px;
+    image-rendering: pixelated;
+    cursor: crosshair;
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+header {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+h1 {
+    font-size: 2.8em;
+    margin-bottom: 10px;
+    text-shadow: 0 0 15px #00ffff, 0 0 25px #00ffff;
+    color: #00ffff;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 2px;
+}
+
+/* HEADER - CREATOR INFO */
+.creator-info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.creator-text {
+    font-size: 1.2em;
+    color: #ffffff;
+}
+
+.ricco-signature {
+    font-family: 'Courier New', monospace;
+    font-size: 2em;
+    font-weight: bold;
+    color: #ff00ff;
+    text-shadow: 
+        0 0 10px #ff00ff,
+        0 0 20px #ff00ff,
+        0 0 30px #ff00ff,
+        2px 2px 0px #880088;
+    background: linear-gradient(45deg, #ff00ff, #cc00cc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    border: 2px solid #ff00ff;
+    padding: 8px 25px;
+    border-radius: 8px;
+    box-shadow: 
+        inset 0 0 15px #ff00ff,
+        0 0 20px #ff00ff;
+    animation: riccoGlow 2.5s ease-in-out infinite alternate;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+/* ANIMASI GLOW UNTUK RICCO */
+@keyframes riccoGlow {
+    0% {
+        text-shadow: 
+            0 0 10px #ff00ff,
+            0 0 20px #ff00ff,
+            0 0 30px #ff00ff;
+        box-shadow: 
+            inset 0 0 10px #ff00ff,
+            0 0 15px #ff00ff;
+    }
+    100% {
+        text-shadow: 
+            0 0 15px #ff00ff,
+            0 0 25px #ff00ff,
+            0 0 35px #ff00ff,
+            0 0 45px #ff00ff;
+        box-shadow: 
+            inset 0 0 20px #ff00ff,
+            0 0 30px #ff00ff;
+    }
+}
+
+.score-board {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    font-size: 1.3em;
+    margin-bottom: 20px;
+}
+
+.score-board div {
+    background: rgba(0, 0, 0, 0.6);
+    padding: 12px 25px;
+    border-radius: 8px;
+    border: 2px solid #00ffff;
+    text-shadow: 0 0 5px #00ffff;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+.game-container {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+#gameCanvas {
+    border: 4px solid #00ffff;
+    border-radius: 10px;
+    background: #000011;
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.7);
+    image-rendering: pixelated;
+    cursor: crosshair;
+    max-width: 100%;
+    height: auto;
+}
+
+/* MOBILE CONTROLS */
+#mobileControls {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    border-top: 2px solid #00ffff;
+}
+
+.touch-area {
+    width: 100%;
+    height: 120px;
+    background: rgba(0, 255, 255, 0.1);
+    border: 2px dashed rgba(0, 255, 255, 0.5);
+    border-radius: 15px;
+    margin-bottom: 15px;
+    touch-action: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #00ffff;
+    font-size: 14px;
+    text-shadow: 0 0 10px #00ffff;
+}
+
+.touch-area:active {
+    background: rgba(0, 255, 255, 0.2);
+}
+
+.control-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.control-btn {
+    flex: 1;
+    padding: 15px 10px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+    transition: all 0.2s ease;
+    touch-action: manipulation;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.control-btn:active {
+    transform: scale(0.95);
+}
+
+#shootBtn {
+    background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+    color: white;
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+}
+
+#shootBtn:active {
+    background: linear-gradient(45deg, #ff5252, #ff7b42);
+    box-shadow: 0 2px 8px rgba(255, 107, 107, 0.6);
+}
+
+#pauseBtn {
+    background: linear-gradient(45deg, #4facfe, #00f2fe);
+    color: white;
+    box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+}
+
+#pauseBtn:active {
+    background: linear-gradient(45deg, #3a9dfc, #00d9fe);
+    box-shadow: 0 2px 8px rgba(79, 172, 254, 0.6);
+}
+
+/* Show mobile controls only on mobile */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+        cursor: default;
+    }
+    
+    h1 {
+        font-size: 2em;
+    }
+    
+    .score-board {
+        font-size: 1.1em;
+        gap: 15px;
+    }
+    
+    .score-board div {
+        padding: 8px 15px;
+    }
+    
+    .ricco-signature {
+        font-size: 1.5em;
+        padding: 6px 15px;
+    }
+    
+    .creator-info {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    #gameCanvas {
+        border-width: 3px;
+    }
+}
+
+/* Hide mobile controls on desktop */
+@media (min-width: 769px) {
+    #mobileControls {
+        display: none !important;
+    }
+}
+
+.controls {
+    background: rgba(0, 0, 0, 0.7);
+    padding: 15px;
+    border-radius: 10px;
+    border: 2px solid #00ff00;
+    margin-bottom: 15px;
+    text-shadow: 0 0 5px #00ff00;
+}
+
+.control-note {
+    font-size: 0.9em;
+    color: #cccccc;
+    margin-top: 5px;
+}
+
+.footer {
+    margin-top: 20px;
+}
+
+.wildstrike-fams {
+    font-family: 'Courier New', monospace;
+    font-size: 1.8em;
+    color: #ffff00;
+    text-shadow: 0 0 10px #ffff00, 0 0 20px #ff9900;
+    animation: wildstrikeGlow 2s ease-in-out infinite alternate;
+    border: 2px solid #ffff00;
+    padding: 12px 30px;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.5);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+@keyframes wildstrikeGlow {
+    from {
+        text-shadow: 0 0 10px #ffff00, 0 0 20px #ff9900;
+        box-shadow: 0 0 15px rgba(255, 255, 0, 0.5);
+    }
+    to {
+        text-shadow: 0 0 15px #ffff00, 0 0 30px #ff9900, 0 0 40px #ff5500;
+        box-shadow: 0 0 25px rgba(255, 255, 0, 0.8);
+    }
+}
+
+#gameOver {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.95);
+    padding: 50px;
+    border-radius: 15px;
+    border: 3px solid #ff0000;
+    box-shadow: 0 0 40px rgba(255, 0, 0, 0.8);
+    z-index: 1000;
+}
+
+#gameOver h2 {
+    color: #ff0000;
+    margin-bottom: 25px;
+    font-size: 2.5em;
+    text-shadow: 0 0 10px #ff0000;
+}
+
+#gameOver p {
+    font-size: 1.4em;
+    margin-bottom: 25px;
+    color: #00ffff;
+}
+
+#gameOver button {
+    background: linear-gradient(45deg, #00ff00, #00cc00);
+    color: black;
+    border: none;
+    padding: 15px 40px;
+    font-size: 1.3em;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 20px;
+    font-weight: bold;
+    text-shadow: 0 0 5px #ffffff;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.7);
+    transition: all 0.3s ease;
+}
+
+#gameOver button:hover {
+    background: linear-gradient(45deg, #00cc00, #00ff00);
+    transform: scale(1.1);
+    box-shadow: 0 0 25px rgba(0, 255, 0, 0.9);
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Particle effects */
+.particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: #ffffff;
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+/* Click effect */
+.click-effect {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ffff00;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: clickPulse 0.3s ease-out;
+}
+
+@keyframes clickPulse {
+    0% {
+        transform: scale(0.5);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
