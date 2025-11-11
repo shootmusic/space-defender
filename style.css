@@ -12,6 +12,10 @@ body {
     padding: 20px;
     image-rendering: pixelated;
     cursor: crosshair;
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .container {
@@ -126,6 +130,133 @@ h1 {
     box-shadow: 0 0 30px rgba(0, 255, 255, 0.7);
     image-rendering: pixelated;
     cursor: crosshair;
+    max-width: 100%;
+    height: auto;
+}
+
+/* MOBILE CONTROLS */
+#mobileControls {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    border-top: 2px solid #00ffff;
+}
+
+.touch-area {
+    width: 100%;
+    height: 120px;
+    background: rgba(0, 255, 255, 0.1);
+    border: 2px dashed rgba(0, 255, 255, 0.5);
+    border-radius: 15px;
+    margin-bottom: 15px;
+    touch-action: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #00ffff;
+    font-size: 14px;
+    text-shadow: 0 0 10px #00ffff;
+}
+
+.touch-area:active {
+    background: rgba(0, 255, 255, 0.2);
+}
+
+.control-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.control-btn {
+    flex: 1;
+    padding: 15px 10px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+    transition: all 0.2s ease;
+    touch-action: manipulation;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.control-btn:active {
+    transform: scale(0.95);
+}
+
+#shootBtn {
+    background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+    color: white;
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+}
+
+#shootBtn:active {
+    background: linear-gradient(45deg, #ff5252, #ff7b42);
+    box-shadow: 0 2px 8px rgba(255, 107, 107, 0.6);
+}
+
+#pauseBtn {
+    background: linear-gradient(45deg, #4facfe, #00f2fe);
+    color: white;
+    box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+}
+
+#pauseBtn:active {
+    background: linear-gradient(45deg, #3a9dfc, #00d9fe);
+    box-shadow: 0 2px 8px rgba(79, 172, 254, 0.6);
+}
+
+/* Show mobile controls only on mobile */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+        cursor: default;
+    }
+    
+    h1 {
+        font-size: 2em;
+    }
+    
+    .score-board {
+        font-size: 1.1em;
+        gap: 15px;
+    }
+    
+    .score-board div {
+        padding: 8px 15px;
+    }
+    
+    .ricco-signature {
+        font-size: 1.5em;
+        padding: 6px 15px;
+    }
+    
+    .creator-info {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    #gameCanvas {
+        border-width: 3px;
+    }
+}
+
+/* Hide mobile controls on desktop */
+@media (min-width: 769px) {
+    #mobileControls {
+        display: none !important;
+    }
 }
 
 .controls {

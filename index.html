@@ -1,98 +1,71 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- ✅ META TAGS UNTUK GOOGLE -->
-    <title>Space Defender Game - Free Online Arcade Shooter by Ricco</title>
-    <meta name="description" content="Play Space Defender - Free online arcade shooting game. Control your spaceship, shoot enemies, and survive as long as possible. Created by Ricco from WildStrikeFams.">
-    <meta name="keywords" content="space defender game, free online game, arcade shooter, spaceship game, html5 game, ricco game, wildstrikefams, browser game, shooting game">
-    <meta name="author" content="Ricco">
-    
-    <!-- Open Graph Tags untuk Social Media -->
-    <meta property="og:title" content="Space Defender - Free Online Arcade Game">
-    <meta property="og:description" content="Play this awesome space shooting game for free! Control your spaceship and destroy enemies.">
-    <meta property="og:type" content="website">
-    <!-- <meta property="og:image" content="https://username.github.io/space-defender/preview.jpg"> -->
-    
-    <!-- Favicon Simple -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
-    
-    <!-- Mobile Optimization -->
-    <meta name="theme-color" content="#0f2027">
-    <meta name="mobile-web-app-capable" content="yes">
-    
+    <title>Space Defender - Free Online Space Shooter Game</title>
+    <meta name="description" content="Play Space Defender - Free online arcade space shooting game. Defend the galaxy from enemy spaceships in this exciting HTML5 game.">
+    <meta name="keywords" content="space defender, space game, shooter game, arcade game, online game, free game, html5 game, space shooter, browser game">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Structured data untuk Google -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "VideoGame",
-      "name": "Space Defender",
-      "description": "Free online arcade space shooting game",
-      "gamePlatform": "Web Browser",
-      "applicationCategory": "Game",
-      "genre": ["Arcade", "Shooter", "Space"],
-      "author": {
-        "@type": "Person",
-        "name": "Ricco"
-      },
-      "publisher": "WildStrikeFams",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      }
-    }
-    </script>
-
-    <!-- ISI GAME YANG SAMA -->
     <div class="container">
         <header>
-            <h1>🚀 Space Defender</h1>
+            <h1>🚀 SPACE DEFENDER</h1>
+            
             <div class="creator-info">
                 <span class="creator-text">Created by:</span>
-                <span class="ricco-signature">RICCO</span>
+                <div class="ricco-signature">RICCO</div>
             </div>
+
             <div class="score-board">
-                <div>Score: <span id="score">0</span></div>
-                <div>Lives: <span id="lives">3</span></div>
-                <div>Level: <span id="level">1</span></div>
+                <div>SCORE: <span id="score">0</span></div>
+                <div>LIVES: <span id="lives">3</span></div>
+                <div>LEVEL: <span id="level">1</span></div>
             </div>
         </header>
 
         <div class="game-container">
-            <canvas id="gameCanvas" width="800" height="500"></canvas>
+            <canvas id="gameCanvas" width="800" height="600"></canvas>
+            
             <div id="gameOver" class="hidden">
-                <h2>💀 Game Over!</h2>
+                <h2>GAME OVER</h2>
                 <p>Final Score: <span id="finalScore">0</span></p>
-                <button onclick="restartGame()">🔄 Play Again</button>
+                <button onclick="restartGame()">🔄 PLAY AGAIN</button>
             </div>
         </div>
 
         <div class="controls">
-            <p>🅰 🅳 Move Ship | Mouse Click to Shoot | R to Restart</p>
-            <p class="control-note">(Or use Arrow Keys + Space)</p>
+            <p><strong>CONTROLS:</strong> A/D or Arrow Keys to Move • SPACE or Click to Shoot • R to Restart</p>
+            <p class="control-note">🎯 Tip: Shoot the enemy spaceships before they reach you!</p>
         </div>
-        
-        <footer class="footer">
-            <div class="wildstrike-fams">WILDSTRIKEFAMS</div>
-        </footer>
+
+        <div class="footer">
+            <div class="wildstrike-fams">WILDSTRIKE.FAMS</div>
+        </div>
     </div>
 
-    <!-- Sound Elements -->
+    <!-- Audio Elements -->
     <audio id="shootSound" preload="auto">
-        <source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==" type="audio/wav">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-laser-weapon-shot-1681.mp3" type="audio/mpeg">
     </audio>
     <audio id="explosionSound" preload="auto">
-        <source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==" type="audio/wav">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-explosion-with-debris-1704.mp3" type="audio/mpeg">
     </audio>
     <audio id="gameOverSound" preload="auto">
-        <source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==" type="audio/wav">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-game-over-trombone-1940.mp3" type="audio/mpeg">
     </audio>
+
+    <!-- Mobile Controls -->
+    <div id="mobileControls" class="mobile-controls">
+        <div class="touch-area" id="touchArea">
+            DRAG TO MOVE & AUTO-SHOOT
+        </div>
+        <div class="control-buttons">
+            <button id="shootBtn" class="control-btn">🔫 MANUAL SHOOT</button>
+            <button id="pauseBtn" class="control-btn">⏸️ PAUSE</button>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>

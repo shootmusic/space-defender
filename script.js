@@ -22,11 +22,18 @@ class SpaceDefender {
         this.level = 1;
         this.gameOver = false;
         this.gameRunning = true;
+        this.gamePaused = false;
         
         this.keys = {};
         this.enemySpawnRate = 80;
         this.frameCount = 0;
         this.shootCooldown = 0;
+        
+        // Mobile controls
+        this.touchStartX = 0;
+        this.isDragging = false;
+        this.autoShootInterval = null;
+        this.isMobile = this.detectMobile();
         
         // Sound elements
         this.shootSound = document.getElementById('shootSound');
@@ -34,8 +41,13 @@ class SpaceDefender {
         this.gameOverSound = document.getElementById('gameOverSound');
         
         this.setupEventListeners();
+        this.setupMobileControls();
         this.updateUI();
         this.gameLoop();
+    }
+    
+    detectMobile() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     }
     
     setupEventListeners() {
@@ -51,6 +63,10 @@ class SpaceDefender {
             if ((e.key === 'r' || e.key === 'R') && this.gameOver) {
                 this.restartGame();
             }
+            
+            if (e.key === 'p' || e.key === 'P') {
+                this.togglePause();
+            }
         });
         
         document.addEventListener('keyup', (e) => {
@@ -59,18 +75,103 @@ class SpaceDefender {
         
         // Mouse controls
         this.canvas.addEventListener('click', (e) => {
-            if (!this.gameOver && this.gameRunning && this.shootCooldown <= 0) {
+            if (!this.gameOver && this.gameRunning && this.shootCooldown <= 0 && !this.isMobile) {
                 this.shoot();
                 this.createClickEffect(e.offsetX, e.offsetY);
                 this.shootCooldown = 10;
             }
         });
+    }
+    
+    setupMobileControls() {
+        if (!this.isMobile) return;
         
-        this.canvas.addEventListener('mousemove', (e) => {
-            if (!this.gameOver && this.gameRunning) {
-                // Optional: bisa ditambahkan mouse movement control nanti
+        const touchArea = document.getElementById('touchArea');
+        const shootBtn = document.getElementById('shootBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const mobileControls = document.getElementById('mobileControls');
+        
+        // Show mobile controls
+        mobileControls.style.display = 'block';
+        
+        // Touch drag movement dengan auto-shoot
+        touchArea.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            if (this.gameOver || this.gamePaused) return;
+            
+            this.touchStartX = e.touches[0].clientX;
+            this.isDragging = true;
+            this.startAutoShoot();
+        });
+        
+        touchArea.addEventListener('touchmove', (e) => {
+            if (!this.isDragging || this.gameOver || this.gamePaused) return;
+            e.preventDefault();
+            
+            const touchX = e.touches[0].clientX;
+            const deltaX = touchX - this.touchStartX;
+            
+            if (deltaX > 15) {
+                // Move right
+                this.player.x = Math.min(this.canvas.width - this.player.width, this.player.x + 10);
+                this.touchStartX = touchX;
+            } else if (deltaX < -15) {
+                // Move left
+                this.player.x = Math.max(0, this.player.x - 10);
+                this.touchStartX = touchX;
             }
         });
+        
+        touchArea.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            this.isDragging = false;
+            this.stopAutoShoot();
+        });
+        
+        // Manual shoot button
+        shootBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            if (!this.gameOver && this.gameRunning && this.shootCooldown <= 0) {
+                this.shoot();
+                this.shootCooldown = 15;
+            }
+        });
+        
+        // Pause button
+        pauseBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            this.togglePause();
+        });
+    }
+    
+    startAutoShoot() {
+        if (this.autoShootInterval) return;
+        
+        this.autoShootInterval = setInterval(() => {
+            if (!this.gameOver && this.gameRunning && !this.gamePaused && this.shootCooldown <= 0) {
+                this.shoot();
+                this.shootCooldown = 8; // Faster shooting on auto
+            }
+        }, 300);
+    }
+    
+    stopAutoShoot() {
+        if (this.autoShootInterval) {
+            clearInterval(this.autoShootInterval);
+            this.autoShootInterval = null;
+        }
+    }
+    
+    togglePause() {
+        this.gamePaused = !this.gamePaused;
+        const pauseBtn = document.getElementById('pauseBtn');
+        if (pauseBtn) {
+            pauseBtn.textContent = this.gamePaused ? '▶️ PLAY' : '⏸️ PAUSE';
+        }
+        
+        if (!this.gamePaused && !this.gameOver) {
+            this.gameLoop();
+        }
     }
     
     createClickEffect(x, y) {
@@ -143,19 +244,21 @@ class SpaceDefender {
     }
     
     update() {
-        if (this.gameOver || !this.gameRunning) return;
+        if (this.gameOver || !this.gameRunning || this.gamePaused) return;
         
         // Cooldown shooting
         if (this.shootCooldown > 0) {
             this.shootCooldown--;
         }
         
-        // Player movement - A & D keys
-        if ((this.keys['a'] || this.keys['A'] || this.keys['ArrowLeft']) && this.player.x > 0) {
-            this.player.x -= this.player.speed;
-        }
-        if ((this.keys['d'] || this.keys['D'] || this.keys['ArrowRight']) && this.player.x < this.canvas.width - this.player.width) {
-            this.player.x += this.player.speed;
+        // Player movement - A & D keys (for desktop)
+        if (!this.isMobile) {
+            if ((this.keys['a'] || this.keys['A'] || this.keys['ArrowLeft']) && this.player.x > 0) {
+                this.player.x -= this.player.speed;
+            }
+            if ((this.keys['d'] || this.keys['D'] || this.keys['ArrowRight']) && this.player.x < this.canvas.width - this.player.width) {
+                this.player.x += this.player.speed;
+            }
         }
         
         // Update bullets
@@ -274,6 +377,16 @@ class SpaceDefender {
         });
     }
     
+    drawMobileControls() {
+        if (!this.isMobile) return;
+        
+        // Draw touch area visual feedback
+        if (this.isDragging) {
+            this.ctx.fillStyle = 'rgba(0, 255, 255, 0.1)';
+            this.ctx.fillRect(this.canvas.width * 0.15, this.canvas.height - 200, this.canvas.width * 0.7, 150);
+        }
+    }
+    
     draw() {
         // Clear canvas dengan gradient
         const gradient = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height);
@@ -314,6 +427,9 @@ class SpaceDefender {
             this.drawEnemy(enemy);
         });
         
+        // Draw mobile controls feedback
+        this.drawMobileControls();
+        
         // Draw level info
         if (this.frameCount % 120 < 60 && !this.gameOver) {
             this.ctx.fillStyle = '#00ffff';
@@ -323,11 +439,23 @@ class SpaceDefender {
         }
         
         // Draw control hint
-        if (this.frameCount < 180 && !this.gameOver) {
+        if (this.frameCount < 180 && !this.gameOver && !this.isMobile) {
             this.ctx.fillStyle = '#00ff00';
             this.ctx.font = '16px Courier New';
             this.ctx.textAlign = 'center';
             this.ctx.fillText('Use A/D to move • Click to shoot', this.canvas.width / 2, this.canvas.height - 20);
+        }
+        
+        // Draw pause indicator
+        if (this.gamePaused) {
+            this.ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+            this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+            this.ctx.fillStyle = '#ffff00';
+            this.ctx.font = '30px Courier New';
+            this.ctx.textAlign = 'center';
+            this.ctx.fillText('GAME PAUSED', this.canvas.width / 2, this.canvas.height / 2);
+            this.ctx.font = '18px Courier New';
+            this.ctx.fillText('Tap PLAY button to continue', this.canvas.width / 2, this.canvas.height / 2 + 40);
         }
     }
     
@@ -345,7 +473,7 @@ class SpaceDefender {
         this.update();
         this.draw();
         
-        if (!this.gameOver && this.gameRunning) {
+        if (!this.gameOver && this.gameRunning && !this.gamePaused) {
             requestAnimationFrame(() => this.gameLoop());
         }
     }
@@ -359,6 +487,7 @@ class SpaceDefender {
     endGame() {
         this.gameOver = true;
         this.gameRunning = false;
+        this.stopAutoShoot();
         document.getElementById('finalScore').textContent = this.score;
         document.getElementById('gameOver').classList.remove('hidden');
         this.playSound(this.gameOverSound);
@@ -374,10 +503,18 @@ class SpaceDefender {
         this.clickEffects = [];
         this.gameOver = false;
         this.gameRunning = true;
+        this.gamePaused = false;
         this.frameCount = 0;
         this.shootCooldown = 0;
+        this.stopAutoShoot();
         this.updateUI();
         document.getElementById('gameOver').classList.add('hidden');
+        
+        const pauseBtn = document.getElementById('pauseBtn');
+        if (pauseBtn) {
+            pauseBtn.textContent = '⏸️ PAUSE';
+        }
+        
         this.gameLoop();
     }
 }
