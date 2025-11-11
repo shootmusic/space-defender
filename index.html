@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- ✅ META TAGS UNTUK GOOGLE -->
+    <title>Space Defender Game - Free Online Arcade Shooter by Ricco</title>
+    <meta name="description" content="Play Space Defender - Free online arcade shooting game. Control your spaceship, shoot enemies, and survive as long as possible. Created by Ricco from WildStrikeFams.">
+    <meta name="keywords" content="space defender game, free online game, arcade shooter, spaceship game, html5 game, ricco game, wildstrikefams, browser game, shooting game">
+    <meta name="author" content="Ricco">
+    
+    <!-- Open Graph Tags untuk Social Media -->
+    <meta property="og:title" content="Space Defender - Free Online Arcade Game">
+    <meta property="og:description" content="Play this awesome space shooting game for free! Control your spaceship and destroy enemies.">
+    <meta property="og:type" content="website">
+    <!-- <meta property="og:image" content="https://username.github.io/space-defender/preview.jpg"> -->
+    
+    <!-- Favicon Simple -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+    
+    <!-- Mobile Optimization -->
+    <meta name="theme-color" content="#0f2027">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Structured data untuk Google -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "VideoGame",
+      "name": "Space Defender",
+      "description": "Free online arcade space shooting game",
+      "gamePlatform": "Web Browser",
+      "applicationCategory": "Game",
+      "genre": ["Arcade", "Shooter", "Space"],
+      "author": {
+        "@type": "Person",
+        "name": "Ricco"
+      },
+      "publisher": "WildStrikeFams",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+    </script>
+
+    <!-- ISI GAME YANG SAMA -->
+    <div class="container">
+        <header>
+            <h1>🚀 Space Defender</h1>
+            <div class="creator-info">
+                <span class="creator-text">Created by:</span>
+                <span class="ricco-signature">RICCO</span>
+            </div>
+            <div class="score-board">
+                <div>Score: <span id="score">0</span></div>
+                <div>Lives: <span id="lives">3</span></div>
+                <div>Level: <span id="level">1</span></div>
+            </div>
+        </header>
+
+        <div class="game-container">
+            <canvas id="gameCanvas" width="800" height="500"></canvas>
+            <div id="gameOver" class="hidden">
+                <h2>💀 Game Over!</h2>
+                <p>Final Score: <span id="finalScore">0</span></p>
+                <button onclick="restartGame()">🔄 Play Again</button>
+            </div>
+        </div>
+
+        <div class="controls">
+            <p>🅰 🅳 Move Ship | Mouse Click to Shoot | R to Restart</p>
+            <p class="control-note">(Or use Arrow Keys + Space)</p>
+        </div>
+        
+        <footer class="footer">
+            <div class="wildstrike-fams">WILDSTRIKEFAMS</div>
+        </footer>
+    </div>
+
+    <!-- Sound Elements -->
+    <audio id="shootSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==" type="audio/wav">
+    </audio>
+    <audio id="explosionSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==" type="audio/wav">
+    </audio>
+    <audio id="gameOverSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==" type="audio/wav">
+    </audio>
+
+    <script src="script.js"></script>
+</body>
+</html>
