@@ -3,6 +3,9 @@ class SpaceDefender {
         this.canvas = document.getElementById('gameCanvas');
         this.ctx = this.canvas.getContext('2d');
         
+        // Adjust canvas size for mobile
+        this.adjustCanvasSize();
+        
         // Player dengan design lebih keren
         this.player = {
             x: this.canvas.width / 2 - 25,
@@ -46,8 +49,20 @@ class SpaceDefender {
         this.gameLoop();
     }
     
+    adjustCanvasSize() {
+        // Adjust canvas size for mobile
+        if (this.detectMobile()) {
+            this.canvas.width = Math.min(800, window.innerWidth - 40);
+            this.canvas.height = Math.min(500, window.innerHeight - 300);
+        } else {
+            this.canvas.width = 800;
+            this.canvas.height = 600;
+        }
+    }
+    
     detectMobile() {
-        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+               window.innerWidth <= 768;
     }
     
     setupEventListeners() {
@@ -73,13 +88,20 @@ class SpaceDefender {
             this.keys[e.key] = false;
         });
         
-        // Mouse controls
+        // Mouse controls (desktop only)
         this.canvas.addEventListener('click', (e) => {
             if (!this.gameOver && this.gameRunning && this.shootCooldown <= 0 && !this.isMobile) {
                 this.shoot();
                 this.createClickEffect(e.offsetX, e.offsetY);
                 this.shootCooldown = 10;
             }
+        });
+        
+        // Window resize
+        window.addEventListener('resize', () => {
+            this.adjustCanvasSize();
+            this.player.x = this.canvas.width / 2 - 25;
+            this.player.y = this.canvas.height - 80;
         });
     }
     
@@ -92,56 +114,67 @@ class SpaceDefender {
         const mobileControls = document.getElementById('mobileControls');
         
         // Show mobile controls
-        mobileControls.style.display = 'block';
+        if (mobileControls) {
+            mobileControls.style.display = 'block';
+        }
         
         // Touch drag movement dengan auto-shoot
-        touchArea.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            if (this.gameOver || this.gamePaused) return;
+        if (touchArea) {
+            touchArea.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                if (this.gameOver || this.gamePaused) return;
+                
+                const rect = this.canvas.getBoundingClientRect();
+                this.touchStartX = e.touches[0].clientX - rect.left;
+                this.isDragging = true;
+                this.startAutoShoot();
+            });
             
-            this.touchStartX = e.touches[0].clientX;
-            this.isDragging = true;
-            this.startAutoShoot();
-        });
-        
-        touchArea.addEventListener('touchmove', (e) => {
-            if (!this.isDragging || this.gameOver || this.gamePaused) return;
-            e.preventDefault();
+            touchArea.addEventListener('touchmove', (e) => {
+                if (!this.isDragging || this.gameOver || this.gamePaused) return;
+                e.preventDefault();
+                
+                const rect = this.canvas.getBoundingClientRect();
+                const touchX = e.touches[0].clientX - rect.left;
+                const deltaX = touchX - this.touchStartX;
+                
+                // More sensitive movement for mobile
+                if (deltaX > 10) {
+                    // Move right
+                    this.player.x = Math.min(this.canvas.width - this.player.width, this.player.x + 12);
+                    this.touchStartX = touchX;
+                } else if (deltaX < -10) {
+                    // Move left
+                    this.player.x = Math.max(0, this.player.x - 12);
+                    this.touchStartX = touchX;
+                }
+            });
             
-            const touchX = e.touches[0].clientX;
-            const deltaX = touchX - this.touchStartX;
-            
-            if (deltaX > 15) {
-                // Move right
-                this.player.x = Math.min(this.canvas.width - this.player.width, this.player.x + 10);
-                this.touchStartX = touchX;
-            } else if (deltaX < -15) {
-                // Move left
-                this.player.x = Math.max(0, this.player.x - 10);
-                this.touchStartX = touchX;
-            }
-        });
-        
-        touchArea.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            this.isDragging = false;
-            this.stopAutoShoot();
-        });
+            touchArea.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                this.isDragging = false;
+                this.stopAutoShoot();
+            });
+        }
         
         // Manual shoot button
-        shootBtn.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            if (!this.gameOver && this.gameRunning && this.shootCooldown <= 0) {
-                this.shoot();
-                this.shootCooldown = 15;
-            }
-        });
+        if (shootBtn) {
+            shootBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                if (!this.gameOver && this.gameRunning && this.shootCooldown <= 0) {
+                    this.shoot();
+                    this.shootCooldown = 15;
+                }
+            });
+        }
         
         // Pause button
-        pauseBtn.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            this.togglePause();
-        });
+        if (pauseBtn) {
+            pauseBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                this.togglePause();
+            });
+        }
     }
     
     startAutoShoot() {
@@ -150,9 +183,9 @@ class SpaceDefender {
         this.autoShootInterval = setInterval(() => {
             if (!this.gameOver && this.gameRunning && !this.gamePaused && this.shootCooldown <= 0) {
                 this.shoot();
-                this.shootCooldown = 8; // Faster shooting on auto
+                this.shootCooldown = 6; // Faster shooting on auto for mobile
             }
-        }, 300);
+        }, 250);
     }
     
     stopAutoShoot() {
@@ -446,15 +479,23 @@ class SpaceDefender {
             this.ctx.fillText('Use A/D to move • Click to shoot', this.canvas.width / 2, this.canvas.height - 20);
         }
         
+        // Draw mobile hint
+        if (this.frameCount < 180 && !this.gameOver && this.isMobile) {
+            this.ctx.fillStyle = '#00ff00';
+            this.ctx.font = '14px Courier New';
+            this.ctx.textAlign = 'center';
+            this.ctx.fillText('Drag to move • Auto-shoot enabled', this.canvas.width / 2, this.canvas.height - 20);
+        }
+        
         // Draw pause indicator
         if (this.gamePaused) {
             this.ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
             this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
             this.ctx.fillStyle = '#ffff00';
-            this.ctx.font = '30px Courier New';
+            this.ctx.font = this.isMobile ? '24px Courier New' : '30px Courier New';
             this.ctx.textAlign = 'center';
             this.ctx.fillText('GAME PAUSED', this.canvas.width / 2, this.canvas.height / 2);
-            this.ctx.font = '18px Courier New';
+            this.ctx.font = this.isMobile ? '14px Courier New' : '18px Courier New';
             this.ctx.fillText('Tap PLAY button to continue', this.canvas.width / 2, this.canvas.height / 2 + 40);
         }
     }
